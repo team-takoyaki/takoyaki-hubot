@@ -1,7 +1,8 @@
 # Description:
 #   hubot tell us about weather
 # Commands:
-#   hubot wth 
+#   hubot wth XXX
+#   hubot wth
 #
 
 errorMsg = {
@@ -12,6 +13,16 @@ errorMsg = {
 parseXml2Json = require("xml2js").parseString
 
 getCityCode = (robot, msg, cityName) ->
+
+  # cityName is "default"
+  #   when typed [hubot wth]
+  if cityName == "default"
+    cityCode = robot.brain.get("default_city_code")
+    if cityCode == null
+      # if no default_city_code at robot.brain, return Tokyo
+      cityCode = "130010"
+
+    return cityCode
 
   cityCode = robot.brain.get(cityName)
 
@@ -41,9 +52,15 @@ getCityCode = (robot, msg, cityName) ->
                 cityCode = id
         )
 
+  learingRobot(robot, cityCode)
+
+  return cityCode
+
+learingRobot = (robot, cityCode) ->
   cnt = robot.brain.get("#{cityCode}_count")
   if cnt == null
     cnt = 0
+
   cnt = cnt + 1
   robot.brain.set("#{cityCode}_count", cnt)
   maxCount = robot.brain.get("max_count")
@@ -52,11 +69,12 @@ getCityCode = (robot, msg, cityName) ->
 
   if cnt >= maxCount
     robot.brain.set("default_city_code", cityCode)
+    robot.brain.set("max_count", cnt)
 
-  return cityCode
+  return
 
-getWeatherMsg = (msg, cityCode) ->
-  returnMsg = ""
+sendWeatherMsg = (msg, cityCode) ->
+  sendMsg = ""
   q = city : cityCode
 
   msg.http("http://weather.livedoor.com/forecast/webservice/json/v1")
@@ -64,28 +82,30 @@ getWeatherMsg = (msg, cityCode) ->
     .get() (err, res, body) ->
        try
          weatherJson = JSON.parse(body)
-         returnMsg = "【" + weatherJson.location.area + " - " + weatherJson.location.city + "の天気やで】" + weatherJson.description.text
+         sendMsg = "【" + weatherJson.location.area + " - " + weatherJson.location.city + "の天気やで】" + weatherJson.description.text
        catch error
          eCode = 400
-         returnMsg = eCode + ": #{errorMsg[eCode]}"
-       console.log(returnMsg)
-  return returnMsg
+         sendMsg = eCode + ": #{errorMsg[eCode]}"
+       msg.send sendMsg
+       return
 
-sendResponse = (robot, msg) ->
+sendWrap = (robot, msg, isDefault) ->
 
-  if typeof msg.match[1] != "undefined"
-    cityName = msg.match[1]
+  if isDefault == true
+    cityName = "default"
   else
-    eCode = 500
-    msg.send eCode + ": #{errorMsg[eCode]}"
-    return
+    if typeof msg.match[1] != "undefined"
+      cityName = msg.match[1]
+    else
+      eCode = 500
+      msg.send eCode + ": #{errorMsg[eCode]}"
+      return
 
   cityCode = getCityCode robot, msg, cityName
-  weatherMsg = getWeatherMsg msg, cityCode
-  msg.send weatherMsg
+  sendWeatherMsg msg, cityCode
 
 module.exports = (robot) ->
   robot.respond /wth? (.*)/i, (msg) ->
-    sendResponse robot, msg
+    sendWrap robot, msg, false
   robot.respond /wth$/i, (msg) ->
-    msg.send robot.brain.get("default_city_code")
+    sendWrap robot, msg, true
