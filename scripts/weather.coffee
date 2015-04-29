@@ -41,6 +41,18 @@ getCityCode = (robot, msg, cityName) ->
                 cityCode = id
         )
 
+  cnt = robot.brain.get("#{cityCode}_count")
+  if cnt == null
+    cnt = 0
+  cnt = cnt + 1
+  robot.brain.set("#{cityCode}_count", cnt)
+  maxCount = robot.brain.get("max_count")
+  if maxCount == null
+    maxCount = 0
+
+  if cnt >= maxCount
+    robot.brain.set("default_city_code", cityCode)
+
   return cityCode
 
 getWeatherMsg = (msg, cityCode) ->
@@ -75,4 +87,5 @@ sendResponse = (robot, msg) ->
 module.exports = (robot) ->
   robot.respond /wth? (.*)/i, (msg) ->
     sendResponse robot, msg
-
+  robot.respond /wth$/i, (msg) ->
+    msg.send robot.brain.get("default_city_code")
