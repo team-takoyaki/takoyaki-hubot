@@ -1,8 +1,8 @@
 # Description:
 #   hubot tell us about weather
 # Commands:
-#   hubot wth XXX
-#   hubot wth
+#   hubot wth XXX - Search and show the weather news of city name XXX.
+#   hubot wth - Search and show the weather news of the most retrieved city.
 #
 
 errorMsg = {
