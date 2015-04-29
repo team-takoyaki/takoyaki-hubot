@@ -4,6 +4,11 @@
 #   hubot wth 
 #
 
+errorMsg = {
+  400: 'そんな場所ないで'
+  500: 'いまちょっと動かへんから大人の人呼んでくれや'
+}
+
 parseXml2Json = require('xml2js').parseString
 
 getCityCode = (robot, msg, cityName) ->
@@ -49,14 +54,25 @@ getWeatherMsg = (msg, cityCode) ->
          weatherJson = JSON.parse(body)
          returnMsg = '【' + weatherJson.location.area + ' - ' + weatherJson.location.city + 'の天気やで】' + weatherJson.description.text
        catch error
-         returnMsg = 'そんな場所ないで'
+         eCode = 400
+         returnMsg = eCode + ": #{errorMsg[eCode]}"
+       console.log(returnMsg)
   return returnMsg
-       
+
+sendResponse = (robot, msg) ->
+
+  if typeof msg.match[1] != 'undefined'
+    cityName = msg.match[1]
+  else
+    eCode = 500
+    msg.send eCode + ": #{errorMsg[eCode]}"
+    return
+
+  cityCode = getCityCode robot, msg, cityName
+  weatherMsg = getWeatherMsg msg, cityCode
+  msg.send weatherMsg
 
 module.exports = (robot) ->
   robot.respond /wth? (.*)/i, (msg) ->
-    cityCode = getCityCode robot, msg, '札幌'
-    weatherMsg = getWeatherMsg msg, cityCode
-    msg.send weatherMsg
-    console.log(weatherMsg)
+    sendResponse robot, msg
 
