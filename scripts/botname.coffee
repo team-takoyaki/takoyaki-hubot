@@ -1,7 +1,7 @@
 # Description:
 #   Please tell me robot name
 
-MIN_MATCH_WORD_NUM = 2
+MIN_MATCH_WORD_NUM = 4
 
 module.exports = (robot) ->
     startMatch = robot.name.substr(0, MIN_MATCH_WORD_NUM)
