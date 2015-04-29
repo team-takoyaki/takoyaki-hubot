@@ -12,7 +12,7 @@ RAIN_LEVEL = 30
 
 module.exports = (robot) ->
   cronJob = require('cron').CronJob
-  new cronJob '0 0 7 * * *', () =>
+  new cronJob '0 55 17 * * *', () =>
     sendMsgRain robot
   , null, true, "Asia/Tokyo"
 
