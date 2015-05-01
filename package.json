@@ -23,15 +23,14 @@
   "dependencies": {
     "hubot": ">= 2.6.0 < 3.0.0",
     "hubot-scripts": ">= 2.5.0 < 3.0.0",
-    "node-stringprep": "~0.7.0",
-    "hubot-xmpp": "~0.1.13",
-    "hubot-slack": "^2.2.0",
+    "hubot-xmpp": "^0.1.12",
+    "node-stringprep": "^0.6.2",
     "hubot-schedule": "~0.1.2",
     "xml2js": ">= 0.4",
     "cron": ">= 1.0"
   },
   "engines": {
-    "node": "~0.11.12",
-    "npm": "~1.4.3"
+    "node": ">= 0.8.x",
+    "npm": ">= 1.1.x"
   }
 }
