@@ -50,11 +50,14 @@ getCityCode = (robot, msg, cityName) ->
               # set return value
               if title == cityName
                 cityCode = id
+
+          learingRobot(robot, cityCode)
+          sendWeatherMsg(msg, cityCode)
         )
-
-  learingRobot(robot, cityCode)
-
-  return cityCode
+  else
+    learingRobot(robot, cityCode)
+    sendWeatherMsg(msg, cityCode)
+  return
 
 learingRobot = (robot, cityCode) ->
   cnt = robot.brain.get("#{cityCode}_count")
@@ -74,6 +77,7 @@ learingRobot = (robot, cityCode) ->
   return
 
 sendWeatherMsg = (msg, cityCode) ->
+  console.log(cityCode + "@sendWeatherMsg")
   sendMsg = ""
   q = city : cityCode
 
@@ -101,8 +105,9 @@ sendWrap = (robot, msg, isDefault) ->
       msg.send eCode + ": #{errorMsg[eCode]}"
       return
 
-  cityCode = getCityCode robot, msg, cityName
-  sendWeatherMsg msg, cityCode
+  #cityCode = getCityCode robot, msg, cityName
+  #sendWeatherMsg msg, cityCode
+  getCityCode robot, msg, cityName
 
 module.exports = (robot) ->
   robot.respond /wth? (.*)/i, (msg) ->
