@@ -27,7 +27,6 @@
     "hubot-xmpp": "^0.1.12",
     "node-stringprep": "^0.6.2",
     "hubot-schedule": "~0.1.2",
-    "xml2js": ">= 0.6",
     "cron": ">= 1.0"
   },
   "engines": {
