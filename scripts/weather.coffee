@@ -76,7 +76,6 @@ learningRobot = (robot, cityCode) ->
   return
 
 sendWeatherMsg = (msg, cityCode) ->
-  console.log(cityCode + "@sendWeatherMsg")
   sendMsg = ""
   q = city : cityCode
 
@@ -95,7 +94,6 @@ sendWeatherMsg = (msg, cityCode) ->
 module.exports = (robot) ->
 
   robot.respond /wth? (.*)/i, (msg) ->
-    console.log(typeof(msg.match[1]))
     if typeof(msg.match[1]) == "undefined"
       eCode = 500
       msg.send eCode + ": #{errorMsg[eCode]}"
