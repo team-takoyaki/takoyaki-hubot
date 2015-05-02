@@ -12,8 +12,7 @@ errorMsg = {
 
 parseXml2Json = require("xml2js").parseString
 
-getCityCode = (robot, msg, cityName) ->
-
+sendWrap = (robot, msg, cityName) ->
   # cityName is "default"
   #   when typed [hubot wth]
   if cityName == "default"
@@ -93,24 +92,16 @@ sendWeatherMsg = (msg, cityCode) ->
        msg.send sendMsg
        return
 
-sendWrap = (robot, msg, isDefault) ->
+module.exports = (robot) ->
 
-  if isDefault == true
-    cityName = "default"
-  else
-    if typeof msg.match[1] != "undefined"
-      cityName = msg.match[1]
-    else
+  robot.respond /wth? (.*)/i, (msg) ->
+    console.log(typeof(msg.match[1]))
+    if typeof(msg.match[1]) == "undefined"
       eCode = 500
       msg.send eCode + ": #{errorMsg[eCode]}"
       return
 
-  #cityCode = getCityCode robot, msg, cityName
-  #sendWeatherMsg msg, cityCode
-  getCityCode robot, msg, cityName
+    sendWrap robot, msg, msg.match[1]
 
-module.exports = (robot) ->
-  robot.respond /wth? (.*)/i, (msg) ->
-    sendWrap robot, msg, false
   robot.respond /wth$/i, (msg) ->
-    sendWrap robot, msg, true
+    sendWrap robot, msg, "default"
