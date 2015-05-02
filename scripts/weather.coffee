@@ -16,14 +16,15 @@ sendWrap = (robot, msg, cityName) ->
   # cityName is "default"
   #   when typed [hubot wth]
   if cityName == "default"
+
     cityCode = robot.brain.get("default_city_code")
     if cityCode == null
       # if no default_city_code at robot.brain, return Tokyo
       cityCode = "130010"
 
-    return cityCode
+  else
 
-  cityCode = robot.brain.get(cityName)
+    cityCode = robot.brain.get(cityName)
 
   if cityCode == null
     msg.http("http://weather.livedoor.com/forecast/rss/primary_area.xml")
