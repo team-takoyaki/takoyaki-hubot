@@ -12,19 +12,19 @@ errorMsg = {
 
 parseXml2Json = require("xml2js").parseString
 
-sendWrap = (robot, msg, cityName) ->
+getCityCode = (robot, msg, cityName) ->
+
   # cityName is "default"
   #   when typed [hubot wth]
   if cityName == "default"
-
     cityCode = robot.brain.get("default_city_code")
     if cityCode == null
       # if no default_city_code at robot.brain, return Tokyo
       cityCode = "130010"
 
-  else
+    return cityCode
 
-    cityCode = robot.brain.get(cityName)
+  cityCode = robot.brain.get(cityName)
 
   if cityCode == null
     msg.http("http://weather.livedoor.com/forecast/rss/primary_area.xml")
@@ -50,16 +50,13 @@ sendWrap = (robot, msg, cityName) ->
               # set return value
               if title == cityName
                 cityCode = id
-
-          learningRobot(robot, cityCode)
-          sendWeatherMsg(msg, cityCode)
         )
-  else
-    learningRobot(robot, cityCode)
-    sendWeatherMsg(msg, cityCode)
-  return
 
-learningRobot = (robot, cityCode) ->
+  learingRobot(robot, cityCode)
+
+  return cityCode
+
+learingRobot = (robot, cityCode) ->
   cnt = robot.brain.get("#{cityCode}_count")
   if cnt == null
     cnt = 0
@@ -92,15 +89,23 @@ sendWeatherMsg = (msg, cityCode) ->
        msg.send sendMsg
        return
 
-module.exports = (robot) ->
+sendWrap = (robot, msg, isDefault) ->
 
-  robot.respond /wth? (.*)/i, (msg) ->
-    if typeof(msg.match[1]) == "undefined"
+  if isDefault == true
+    cityName = "default"
+  else
+    if typeof msg.match[1] != "undefined"
+      cityName = msg.match[1]
+    else
       eCode = 500
       msg.send eCode + ": #{errorMsg[eCode]}"
       return
 
-    sendWrap robot, msg, msg.match[1]
+  cityCode = getCityCode robot, msg, cityName
+  sendWeatherMsg msg, cityCode
 
+module.exports = (robot) ->
+  robot.respond /wth? (.*)/i, (msg) ->
+    sendWrap robot, msg, false
   robot.respond /wth$/i, (msg) ->
-    sendWrap robot, msg, "default"
+    sendWrap robot, msg, true
