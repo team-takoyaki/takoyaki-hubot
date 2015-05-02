@@ -50,15 +50,15 @@ sendWrap = (robot, msg, cityName) ->
               if title == cityName
                 cityCode = id
 
-          learingRobot(robot, cityCode)
+          learningRobot(robot, cityCode)
           sendWeatherMsg(msg, cityCode)
         )
   else
-    learingRobot(robot, cityCode)
+    learningRobot(robot, cityCode)
     sendWeatherMsg(msg, cityCode)
   return
 
-learingRobot = (robot, cityCode) ->
+learningRobot = (robot, cityCode) ->
   cnt = robot.brain.get("#{cityCode}_count")
   if cnt == null
     cnt = 0
