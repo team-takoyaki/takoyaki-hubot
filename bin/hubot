@@ -3,8 +3,6 @@
 set -e
 
 npm install
-export HUBOT_GITHUB_USER="Takashi-kun"
-export HUBOT_GITHUB_TOKEN="f4dda37176f3120faad3fefc1d76224fde0940ab"
 export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
 
 exec node_modules/.bin/hubot "$@"
