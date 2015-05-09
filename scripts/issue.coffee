@@ -1,7 +1,10 @@
 # Description:
-#   GitHub Issue
+#   create, open, close GitHub Issue
 #
 # Commands:
+#   hubot issue add "ISSUE_TITLE" "ISSUE_BODY" - Create the issue
+#   hubot issue open ISSUE_ID - (Re)open the issue
+#   hubot issue close ISSUE_ID - Close the issue
 
 github = require('githubot')
 ISSUES_URL = "https://api.github.com/repos/team-takoyaki/takoyaki-hubot/issues"
