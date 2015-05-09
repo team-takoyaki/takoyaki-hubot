@@ -6,3 +6,6 @@ deployment:
     branch: master
     heroku:
       appname: takoyaki-hubot
+test:
+  override:
+    - exit 0
