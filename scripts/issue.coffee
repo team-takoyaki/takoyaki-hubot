@@ -14,7 +14,7 @@ module.exports = (robot) ->
     github.post ISSUES_URL, {title: msg.match[1], body: msg.match[2]}, (response) ->
       issueUrl = response["html_url"]
       message = "Issue作ったで!!\n#{issueUrl}"
-      robot.send message
+      msg.send message
 
   robot.respond /issue\s+(open|closed)\s+([0-9]+)$/i, (msg) ->
     issueState = msg.match[1]
@@ -22,7 +22,7 @@ module.exports = (robot) ->
 
     github.patch "#{ISSUES_URL}/#{issueId}", {state: "#{issueState}"}, (response) ->
       if typeof(response["html_url"]) == "undefined"
-        robot.send "そんなIssue番号ないで!!"
+        msg.send "そんなIssue番号ないで!!"
         return
 
       issueUrl = response["html_url"]
@@ -32,4 +32,4 @@ module.exports = (robot) ->
         message = "Issue閉じたで!!"
 
       message = "#{message}\n#{issueUrl}"
-      robot.send message
+      msg.send message
