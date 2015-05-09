@@ -3,6 +3,10 @@
 #
 # Commands:
 
+ISSUES_URL = "api.github.com/repos/team-takoyaki/takoyaki-hubot/issues"
+USER_NAME = "Takashi-kun"
+ACCESS_TOKEN = "9c21ac35df1abf599d092258fe676a32db51f3c9"
+
 
 module.exports = (robot) ->
   robot.respond /issue\s+add\s+\"(.+)\"\s+\"(.+)\"$/i, (msg) ->
@@ -10,7 +14,7 @@ module.exports = (robot) ->
       title: msg.match[1],
       body: msg.match[2]
     })
-    robot.http("https://Takashi-kun:9c21ac35df1abf599d092258fe676a32db51f3c9@api.github.com/repos/team-takoyaki/takoyaki-hubot/issues")
+    robot.http("https://#{USER_NAME}:#{ACCESS_TOKEN}@#{ISSUES_URL}")
       .headers("Accept": "application/json", "Content-type": "application/json")
       .post(data) (err, res, body) ->
         json = JSON.parse(body)
@@ -22,21 +26,22 @@ module.exports = (robot) ->
     issueState = msg.match[1]
     issueId = msg.match[2]
 
-    if issueState != "open" && issueState != "closed"
-      robot.send "openかclosedにするんやで"
-      return
-
     data = JSON.stringify({
       state: "#{issueState}"
     })
-    robot.http("https://Takashi-kun:9c21ac35df1abf599d092258fe676a32db51f3c9@api.github.com/repos/team-takoyaki/takoyaki-hubot/issues/#{issueId}")
+    robot.http("https://#{USER_NAME}:#{ACCESS_TOKEN}@#{ISSUES_URL}/#{issueId}")
       .headers("Accept": "application/json", "Content-type": "application/json")
       .post(data) (err, res, body) ->
         json = JSON.parse(body)
+        if typeof(json["html_url"]) == "undefined"
+          robot.send "そんなIssue番号ないで!!"
+          return
+
         issueUrl = json["html_url"]
         if issueState == "open"
           message = "Issue開いたで!!"
         else if issueState == "closed"
           message = "Issue閉じたで!!"
         message = "#{message}\n#{issueUrl}"
+
         robot.send message
