@@ -13,14 +13,16 @@ RAIN_LEVEL = 30
 module.exports = (robot) ->
   cronJob = require('cron').CronJob
   new cronJob '0 0 7 * * *', () =>
-    sendMsgRain robot
+    getMessageRain robot.http, (message) ->
+        robot.send {room: "#general"}, message
   , null, true, "Asia/Tokyo"
 
   robot.respond /rain$/i, (msg) ->
-    sendMsgRain robot
+    getMessageRain msg.http, (message) ->
+        msg.send message
 
-sendMsgRain = (robot) ->
-    robot.http(WEATHER_URL)
+getMessageRain = (http, callback) ->
+    http(WEATHER_URL)
       .get() (err, res, body) ->
         json = JSON.parse body
         items = json["value"]["items"]
@@ -37,7 +39,8 @@ sendMsgRain = (robot) ->
         else
             message = "今日は雨は降らんで!!!"
 
-        robot.send {room: "#general"}, message
+        if callback?
+            callback(message)
 
 getTimeStatus = (hour) ->
   if "6-12" == hour
