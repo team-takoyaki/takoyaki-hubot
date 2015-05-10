@@ -74,7 +74,7 @@ module.exports = (robot) ->
 
 # Yahooニュースから1つを選んで発言する
 NEWS_URL = 'http://rss.dailynews.yahoo.co.jp/fc/rss.xml'
-NEWS_PROB = 2
+NEWS_PROB = 10
 parseString = require('xml2js').parseString
 
 sendNewsMessage = (msg) ->
