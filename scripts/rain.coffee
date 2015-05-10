@@ -38,8 +38,7 @@ getMessageRain = (client, callback) ->
         else
             message = "今日は雨は降らんで!!!"
 
-        if callback?
-            callback(message)
+        robot.send {room: "#general"}, message
 
 getTimeStatus = (hour) ->
   if "6-12" == hour
