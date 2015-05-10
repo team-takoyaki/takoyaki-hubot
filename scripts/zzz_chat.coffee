@@ -10,14 +10,14 @@
 API_URL = 'https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY='
 KEY_DOCOMO_CONTEXT = 'docomo-talk-context'
 KEY_DOCOMO_CONTEXT_TTL = 'docomo-talk-context-ttl'
+TTL_MINUTES = 20
 
-getTimeDiffAsMinutes = (old_msec) ->
+getTimeDiffAsMinutes = (oldSec) ->
     now = new Date()
-    old = new Date(old_msec)
-    diff_msec = now.getTime() - old.getTime()
-    diff_minutes = parseInt(diff_msec / (60*1000), 10 )
-    return diff_minutes
-
+    old = new Date(oldSec)
+    diffSec = now.getTime() - old.getTime()
+    diffMinutes = parseInt(diffSec / (60 * 1000), 10)
+    return diffMinutes
 
 module.exports = (robot) ->
     # 全てのコマンド一覧を取得
@@ -31,6 +31,11 @@ module.exports = (robot) ->
         cmd = msg.match[1].split(' ')[0]
         return unless cmds.indexOf(cmd) is -1
 
+        # Newsを発言する
+        if isNewsSend()
+            sendNewsMessage(msg)
+            return
+
         DOCOMO_API_KEY = process.env.DOCOMO_API_KEY
         message = msg.match[1]
         return unless DOCOMO_API_KEY && message
@@ -39,12 +44,11 @@ module.exports = (robot) ->
         context = robot.brain.get KEY_DOCOMO_CONTEXT || ''
 
         # 前回会話してからの経過時間調べる
-        TTL_MINUTES = 20
-        old_msec = robot.brain.get KEY_DOCOMO_CONTEXT_TTL
-        diff_minutes = getTimeDiffAsMinutes old_msec
+        oldSec = robot.brain.get KEY_DOCOMO_CONTEXT_TTL
+        diffMinutes = getTimeDiffAsMinutes oldSec
 
         # 前回会話してから一定時間経っていたらコンテキストを破棄
-        if diff_minutes > TTL_MINUTES
+        if diffMinutes > TTL_MINUTES
             context = ''
 
         url = API_URL + DOCOMO_API_KEY
@@ -67,3 +71,25 @@ module.exports = (robot) ->
                 robot.brain.set KEY_DOCOMO_CONTEXT_TTL, now_msec
 
                 msg.send json.utt
+
+# Yahooニュースから1つを選んで発言する
+NEWS_URL = 'http://rss.dailynews.yahoo.co.jp/fc/rss.xml'
+NEWS_PROB = 2
+parseString = require('xml2js').parseString
+
+sendNewsMessage = (msg) ->
+    msg.http(NEWS_URL)
+      .get() (err, res, body) ->
+        xml   = body
+        parseString(xml, (err, result) ->
+            channel = result.rss.channel[0]
+            items = channel.item
+            item = msg.random items
+            msg.send "このニュースを1つどうぞ\n#{item.link}"
+        )
+
+isNewsSend = () ->
+    num = Math.floor(Math.random() * NEWS_PROB) + 1
+    if NEWS_PROB == num
+        return true
+    return false
