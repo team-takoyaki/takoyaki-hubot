@@ -14,7 +14,6 @@ module.exports = (robot) ->
         parseString(xml, (err, result) ->
             channel = result.rss.channel[0]
             items = channel.item
-            index = Math.floor(Math.random() * items.length)
-            item = items[index]
+            item = msg.random items
             msg.send "#{item.title} - #{item.link}"
         )
