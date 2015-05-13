@@ -2,7 +2,7 @@
 #   Randomly recommend music (youtube) from iTunes Music
 #
 # Commands:
-#   hubot recommend music
+#   hubot music
 
 parser = require('xml2js').parseString
 request = require('request')
