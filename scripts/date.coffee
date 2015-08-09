@@ -17,11 +17,10 @@ getVancouverDate = (callback) ->
     url = "https://maps.googleapis.com/maps/api/timezone/json?location=#{latitude},#{longtitude}&key=#{apiKey}&timestamp=#{timestamp}"
     request url, (error, response, body) ->
         if error? || response.statusCode != 200
-            callback body
             return
         json = JSON.parse(body)
         date = new Date(timestamp * 1000 + json.rawOffset * 1000 + json.dstOffset * 1000);
-        callback '' + date
+        callback date
 
 getJapanDate = (callback) ->
     d = new Date();
@@ -32,20 +31,47 @@ getJapanDate = (callback) ->
     url = "https://maps.googleapis.com/maps/api/timezone/json?location=#{latitude},#{longtitude}&key=#{apiKey}&timestamp=#{timestamp}"
     request url, (error, response, body) ->
         if error? || response.statusCode != 200
-            callback body
             return
         json = JSON.parse(body)
         date = new Date(timestamp * 1000 + json.rawOffset * 1000 + json.dstOffset * 1000);
-        callback '' + date
+        callback date
+
+getVancouverMessage = (date) ->
+    year = date.getFullYear();
+    month = date.getMonth() + 1;
+    day = date.getDate();
+    dayOfWeekIndex = date.getDay();
+    hours = date.getHours();
+    minutes = date.getMinutes();
+    seconds = date.getSeconds();
+    dayOfWeek = new Array("日", "月", "火", "水", "木", "金", "土");
+
+    message = "バンクーバーは#{year}年#{month}月#{day}日(#{dayOfWeek[dayOfWeekIndex]}) #{hours}時#{minutes}分やで！"
+
+    return message
+
+getJapanMessage = (date) ->
+    year = date.getFullYear();
+    month = date.getMonth() + 1;
+    day = date.getDate();
+    dayOfWeekIndex = date.getDay();
+    hours = date.getHours();
+    minutes = date.getMinutes();
+    seconds = date.getSeconds();
+    dayOfWeek = new Array("日", "月", "火", "水", "木", "金", "土");
+
+    message = "日本は#{year}年#{month}月#{day}日(#{dayOfWeek[dayOfWeekIndex]}) #{hours}時#{minutes}分やで！"
+
+    return message
 
 module.exports = (robot) ->
     robot.respond /yvrdate/i, (msg) ->
         getVancouverDate (date) ->
-               msg.send date
+               msg.send getVancouverMessage(date)
 
     robot.respond /jpndate/i, (msg) ->
         getJapanDate (date) ->
-               msg.send date
+               msg.send getJapanMessage(date)
 
 
 
