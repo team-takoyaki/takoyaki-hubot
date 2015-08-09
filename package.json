@@ -26,7 +26,8 @@
     "hubot-slack": ">= 3.2.1",
     "xml2js": ">= 0.4",
     "cron": ">= 1.0",
-    "githubot": ">= 1.0"
+    "githubot": ">= 1.0",
+    "request": ">= 2.0.0"
   },
   "engines": {
     "node": ">= 0.8.x",
