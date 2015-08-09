@@ -13,6 +13,7 @@ getTopSongs = (callback) ->
     request url, (error, response, body) ->
         if error? || response.statusCode != 200
             callback []
+            return
         parser body, (error, result) ->
             entries = result.feed.entry
             callback (entry.title for entry in entries)
