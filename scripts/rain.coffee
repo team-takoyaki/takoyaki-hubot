@@ -11,11 +11,11 @@ WEATHER_URL = "http://pipes.yahoo.com/pipes/pipe.run?_id=11aaf6db1647c2155de5739
 RAIN_LEVEL = 30
 
 module.exports = (robot) ->
-  cronJob = require('cron').CronJob
-  new cronJob '0 0 7 * * *', () =>
-    getMessageRain robot, (message) ->
-        robot.send {room: "#general"}, message
-  , null, true, "Asia/Tokyo"
+  # cronJob = require('cron').CronJob
+  # new cronJob '0 0 7 * * *', () =>
+  #   getMessageRain robot, (message) ->
+  #       robot.send {room: "#general"}, message
+  # , null, true, "Asia/Tokyo"
 
   robot.respond /rain$/i, (msg) ->
     getMessageRain msg, (message) ->
